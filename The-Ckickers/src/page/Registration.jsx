@@ -3,7 +3,7 @@ import React, { useState } from "react";
 const Registration = () => {
   const [activeTab, setActiveTab] = useState("student"); // State to manage active tab
   const [formData, setFormData] = useState({
-    username: "",
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -54,19 +54,19 @@ const Registration = () => {
           {/* Username */}
           <div className="mb-4">
             <label
-              htmlFor="username"
+              htmlFor="name"
               className="block text-sm font-medium text-gray-600"
             >
-              Username
+              Full Name
             </label>
             <input
               type="text"
-              id="username"
-              name="username"
+              id="name"
+              name="name"
               value={formData.username}
               onChange={handleChange}
               className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter your username"
+              placeholder="Enter your name"
               required
             />
           </div>
