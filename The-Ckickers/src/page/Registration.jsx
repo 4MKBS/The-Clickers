@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import axios from "axios";
+import { baseUrl } from "../constant/constant";
 
 const Registration = () => {
   const [activeTab, setActiveTab] = useState("student"); // State to manage active tab
@@ -6,18 +8,39 @@ const Registration = () => {
     name: "",
     email: "",
     password: "",
-    confirmPassword: "",
+    // confirmPassword: "",
   });
+  const [loading, setLoading] = useState(false); // State for loading
+  const [error, setError] = useState(""); // State for error message
+  const [success, setSuccess] = useState(""); // State for success message
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(`Registration Data for ${activeTab}:`, formData);
-    console.log(activeTab);
+
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const response = await axios.post(`${baseUrl}/user/signup`, {
+        ...formData,
+        role: activeTab,
+      });
+      setSuccess("Registration successful!");
+      console.log("API Response:", response.data);
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "An error occurred. Please try again."
+      );
+      console.error("API Error:", err.response || err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -63,7 +86,7 @@ const Registration = () => {
               type="text"
               id="name"
               name="name"
-              value={formData.username}
+              value={formData.name}
               onChange={handleChange}
               className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               placeholder="Enter your name"
@@ -108,30 +131,17 @@ const Registration = () => {
               required
             />
           </div>
-          {/* Confirm Password */}
-          <div className="mb-6">
-            <label
-              htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-600"
-            >
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Confirm your password"
-              required
-            />
-          </div>
+
+          {/* Error and Success Messages */}
+          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+          {success && <p className="text-green-500 text-sm mb-4">{success}</p>}
+          {/* Submit Button */}
           <button
             type="submit"
             className="w-full py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
+            disabled={loading}
           >
-            Register as {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+            {loading ? "Registering..." : `Register as ${activeTab}`}
           </button>
         </form>
         <p className="text-sm text-center text-gray-500 mt-4">

@@ -1,53 +1,47 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import axios from "axios";
+import { baseUrl } from "../constant/constant";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [activeTab, setActiveTab] = useState("student");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
+  const [error, setError] = useState(null); // State for error handling
+  const navigate = useNavigate();
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(`Login Data (${activeTab}):`, formData);
+
+    try {
+      const response = await axios.post(`${baseUrl}/user/login`, formData);
+      console.log("Login Successful:", response.data);
+      console.log("Student Login", response?.data?.data?.role);
+      if (response?.data?.data?.role === "student") {
+        setError(false);
+        navigate("/Studentprofile"); // Redirect to student profile
+      } else {
+        navigate("/Tutorprofile"); // Redirect to tutor profile
+      }
+      // Handle successful login (e.g., redirect or store token)
+    } catch (err) {
+      console.error("Login Error:", err.response.data);
+      setError(
+        err.response?.data?.message || "Login failed. Please try again."
+      ); // Set error message
+    }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        {/* Tab Navigation */}
-        <div className="flex justify-center mb-6 border-b border-gray-200">
-          <button
-            className={`px-4 py-2 font-medium ${
-              activeTab === "student"
-                ? "text-blue-500 border-b-2 border-blue-500"
-                : "text-gray-500"
-            }`}
-            onClick={() => setActiveTab("student")}
-          >
-            Student
-          </button>
-          <button
-            className={`px-4 py-2 font-medium ${
-              activeTab === "teacher"
-                ? "text-blue-500 border-b-2 border-blue-500"
-                : "text-gray-500"
-            }`}
-            onClick={() => setActiveTab("teacher")}
-          >
-            Teacher
-          </button>
-        </div>
-
         {/* Form */}
-        <h2 className="text-2xl font-bold text-center text-gray-700">
-          Login as {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-        </h2>
+        <h2 className="text-2xl font-bold text-center text-gray-700">Login</h2>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label
@@ -85,11 +79,13 @@ const Login = () => {
               required
             />
           </div>
+          {error && <p className="text-red-500 text-sm">{error}</p>}{" "}
+          {/* Display error message */}
           <button
             type="submit"
             className="w-full px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            Login as {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+            Login
           </button>
         </form>
 

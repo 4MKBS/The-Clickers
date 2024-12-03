@@ -4,16 +4,18 @@ import Login from "./page/login";
 import { Route, Routes } from "react-router-dom";
 import Registration from "./page/Registration";
 import NotFoundPage from "./page/NotFound";
-import StudentProfile from "./page/Studentprofile";
-import TutorProfile from "./page/Tutorprofile";
+import StudentProfile from "./page/component/StudentProfile";
+import TutorProfile from "./page/component/Tutorprofile";
+import Navbar from "./page/navbar";
 
 function App() {
   return (
     <Routes>
+      <Route path="/" element={<Navbar />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Registration />} />
-      <Route path="/Studentprofile" element={<StudentProfile/>} />
-      <Route path="/Tutorprofile" element={<TutorProfile/>} />
+      <Route path="/Studentprofile" element={<StudentProfile />} />
+      <Route path="/Tutorprofile" element={<TutorProfile />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
